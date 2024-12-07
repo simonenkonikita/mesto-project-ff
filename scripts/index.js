@@ -1,24 +1,35 @@
+// @todo: Темплейт карточки
+const templateContainer = document.querySelector("#card-template");
 
-const templateContainer = document.querySelector('#card-template').content;
-const cardContainer = document.querySelector('.places__list');
-const addButton = document.querySelector('.profile__add-button');
+// @todo: DOM узлы
+const cardContainer = document.querySelector(".places__list");
+const addButton = document.querySelector(".profile__add-button");
 
+// @todo: Функция создания карточки
 
-initialCards.forEach(function addCard(item) {
-  const cardElement = templateContainer.querySelector('.places__item').cloneNode(true);
+initialCards.forEach(function createCard(item) {
+  const cardElement = templateContainer.content.cloneNode(true);
+  const cardItem = cardElement.querySelector(".card");
+  const cardImage = cardElement.querySelector(".card__image");
+  const cardTitle = cardElement.querySelector(".card__title");
+    cardTitle.textContent =item.name;
+    cardImage.src = item.link;
   cardContainer.append(cardElement);
-  cardElement.querySelector('.card__image').src = item.link;
-  cardElement.querySelector('.card__title').textContent = item.name;
-  addButton.addEventListener('click', addCard);
+  addButton.addEventListener("click", createCard);
+ 
 });
 
-const cardElement = document.querySelector('.places__item');
-const deleteButton = document.querySelector('.card__delete-button');
+
+// @todo: Функция удаления карточки
+const deleteButton = cardContainer.querySelector(".card__delete-button");
+const deleteElement = document.querySelector(".card");
 
 function deleteBtn() {
-  cardElement.remove();
-};
+  deleteElement.remove();
+}
 
-deleteButton.addEventListener('click', deleteBtn);
+deleteButton.addEventListener("click", deleteBtn);
+console.log(deleteElement);
 
-console.log(cardElement);
+// @todo: Вывести карточки на страницу
+
