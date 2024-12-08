@@ -12,7 +12,7 @@ function getCardElement(data, deleteCallback) {
 
   const image = cardEl.querySelector('.card__image');
   image.src = data.link;
-  image.src = data.link;
+  image.alt = data.name;
 
   const deleteBtn = cardEl.querySelector('.card__delete-button');
   deleteBtn.addEventListener('click', deleteCallback);
@@ -21,12 +21,14 @@ function getCardElement(data, deleteCallback) {
 }
  
 function removeHandler(event) {
-  event.target.parentElement.remove();
+  event.target.closest('.places__item').remove();
+
 }
 
-initialCards.forEach(function (item) {
-  const cardEl = getCardElement(item, removeHandler);
+initialCards.forEach(function (data) {
+  const cardEl = getCardElement(data, removeHandler);
   cardContainer.append(cardEl);
 });
 
+  
 
