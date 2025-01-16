@@ -8,10 +8,10 @@ import {
   cardContainer,
 } from "../scripts/index.js";
 import {
-    getCardElement,
-    removeHandler,
-    likeClick,
-  } from "../components/card.js";
+  getCardElement,
+  removeHandler,
+  likeClick,
+} from "../components/card.js";
 
 /* Функция открытия модального окна */
 export function openPopup(popup) {

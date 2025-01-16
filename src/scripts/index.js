@@ -75,4 +75,3 @@ export const formCard = document.forms["new-place"];
 
 // Обработчик к форме Добавление карточки '+':
 formCard.addEventListener("submit", addNewCard);
-
