@@ -1,5 +1,4 @@
 import { templateContainer } from "../scripts/index.js";
-import { popupAnimated } from "../components/modal.js";
 
 /* Функция вставка и удаление карточек */
 export function getCardElement(

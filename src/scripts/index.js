@@ -8,11 +8,8 @@ import {
 } from "../components/card.js";
 import {
   openPopup,
-  removePopup,
-  openPopupImage,
-  handleFormSubmit,
-  dataProfile,
-  addNewCard,
+  closePopup,
+  handleOverlayClick,
 } from "../components/modal.js";
 
 /* Элементы HTML /  вставка и удаление карточек */
@@ -33,12 +30,10 @@ const buttonOpenNewCard = document.querySelector(".profile__add-button");
 export const popupProfile = document.querySelector(".popup_type_edit");
 export const popupNewCard = document.querySelector(".popup_type_new-card");
 
-const popupAll = document.querySelectorAll(".popup");
-
 /* Обработчик Открытие модального окна профиля */
 buttonOpenProfile.addEventListener("click", function () {
   openPopup(popupProfile);
-  dataProfile();
+  fillProfilePopupInputs();
 });
 
 /* Обработчик Открытие модального окна создния карточки */
@@ -46,29 +41,81 @@ buttonOpenNewCard.addEventListener("click", function () {
   openPopup(popupNewCard);
 });
 
+/* Элементы HTML / Все попапы на странице */
+const popupAll = document.querySelectorAll(".popup");
+
+/* Функция закрытия модально окна по оверлею */
+
 /* Перебор элементов для закрытия окна */
 popupAll.forEach(function (popup) {
   popup.addEventListener("click", function (evt) {
-    /* Закрытие по кнопке */
-    if (evt.target.classList.contains("popup__close")) {
-      removePopup(popup);
-      /* Закрытие по оверлею */
-    } else if (evt.target.classList.contains("popup_is-opened")) {
-      removePopup(popup);
-    }
+    handleOverlayClick(evt);
   });
 });
 
+/* Функция Редактирование имени и информации о себе  */
+function handleFormProfile(evt) {
+  evt.preventDefault();
+
+  const nameInputValue = nameInput.value;
+  const jobInputvalueValue = jobInput.value;
+
+  profileInfo.querySelector(".profile__title").textContent = nameInputValue;
+  profileInfo.querySelector(".profile__description").textContent =
+    jobInputvalueValue;
+
+  closePopup(popupProfile);
+}
+
+/* Функция Присваеваем значение полям при открытие формы профиля */
+function fillProfilePopupInputs() {
+  nameInput.value = profileInfo.querySelector(".profile__title").textContent;
+  jobInput.value = profileInfo.querySelector(
+    ".profile__description"
+  ).textContent;
+}
+
+/* Функция открытия изображения */
+function openPopupImage(data) {
+  const popupImage = document.querySelector(".popup_type_image");
+  openPopup(popupImage);
+  const imageName = popupImage.querySelector(".popup__image");
+  const imageCaption = popupImage.querySelector(".popup__caption");
+  imageName.src = data.link;
+  imageName.alt = data.name;
+  imageCaption.textContent = data.name;
+}
+
+/* Функция Добавление карточки '+' */
+function addNewCard(evt) {
+  evt.preventDefault();
+  /* Находим значения */
+  const cardNameInput = formCard.elements["place-name"];
+  const cardLinkInput = formCard.elements.link;
+  const nameInputValue = cardNameInput.value;
+  const linkInputValue = cardLinkInput.value;
+  /* Передаем значения */
+  const cardEl = getCardElement(
+    { name: nameInputValue, link: linkInputValue },
+    removeHandler,
+    likeClick,
+    openPopupImage
+  );
+  cardContainer.prepend(cardEl);
+  formCard.reset();
+  closePopup(popupNewCard);
+}
+
 /* Элементы HTML /Редактирование имени и информации о себе */
 // Находим форму в DOM
-export const formElement = document.forms["edit-profile"];
+const formProfile = document.forms["edit-profile"];
 // Находим поля формы в DOM
 export const profileInfo = document.querySelector(".profile__info");
-export const nameInput = formElement.elements.name;
-export const jobInput = formElement.elements.description;
+export const nameInput = formProfile.elements.name;
+export const jobInput = formProfile.elements.description;
 
 // Обработчик к форме Редактирование имени и информации о себе :
-formElement.addEventListener("submit", handleFormSubmit);
+formProfile.addEventListener("submit", handleFormProfile);
 
 /* Добавление карточки '+' */
 export const formCard = document.forms["new-place"];
