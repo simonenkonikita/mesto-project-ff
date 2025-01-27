@@ -12,6 +12,20 @@ import {
   handleOverlayClick,
 } from "../components/modal.js";
 
+
+/* Данные для валидации */
+const setValidation = {
+  formSelector: '.popup__form',
+  inputSelector: '.popup__input',
+  submitButtonSelector: '.popup__button',
+  inactiveButtonClass: 'popup__button_disabled',
+  inputErrorClass: 'popup__input_type_error',
+  errorClass: 'popup__error_visible'
+}; 
+
+
+/* enableValidation(setValidation)  */
+
 /* Элементы HTML /  вставка и удаление карточек */
 export const templateContainer =
   document.querySelector("#card-template").content;
@@ -42,14 +56,11 @@ buttonOpenProfile.addEventListener("click", function () {
 buttonOpenNewCard.addEventListener("click", function () {
   openPopup(popupNewCard);
   clearValidation(popupNewCard);
-  clearNewCardPopupInputs();
   enableValidation();
 });
 
 /* Функция сбрасываем значения значение полям при открытие формы добавления карточки */
-function clearNewCardPopupInputs() {
-  formCard.reset();
-}
+
 
 /* Элементы HTML / Все попапы на странице */
 const popupAll = document.querySelectorAll(".popup");
@@ -135,6 +146,7 @@ formCard.addEventListener("submit", addNewCard);
 
 /* /* ПР 3 / Валидация  */
 
+
 // Функция, которая добавляет класс с ошибкой
 const showInputError = (formElement, inputElement, errorMessage) => {
   const errorElement = formElement.querySelector(`.${inputElement.id}_error`);
@@ -206,9 +218,14 @@ const hasInvalidInput = (inputList) => {
 
 // Функция сброса ошибок при повторном открытии попапа
 const clearValidation = (formElement) => {
+  const buttonElement = formElement.querySelector(".popup__button");
   const inputList = Array.from(formElement.querySelectorAll(".popup__input"));
   inputList.forEach((inputElement) => {
     inputElement.setCustomValidity("");
     hideInputError(formElement, inputElement);
   });
+  formCard.reset();
+  toggleButtonState(inputList, buttonElement);
 };
+
+
