@@ -6,7 +6,7 @@ export function openPopup(popup) {
 }
 
 /* Функция закрытия модального окна */
-export function closePopup(popup) {
+  export function closePopup(popup) {
   popup.classList.remove("popup_is-opened");
   document.removeEventListener("keydown", keyСlosePopup);
 }
@@ -19,9 +19,8 @@ export function keyСlosePopup(evt) {
   }
 }
 
-/* Функция азакрытия окная по оверлею*/
+/* Функция зазакрытия окная по оверлею*/
 export function handleOverlayClick(evt) {
-  const popupOpen = document.querySelector(".popup_is-opened");
   if (evt.target.classList.contains("popup__close")) {
     closePopup(evt.currentTarget);
   } else if (evt.target.classList.contains("popup_is-opened")) {

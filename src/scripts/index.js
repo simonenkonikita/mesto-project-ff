@@ -33,20 +33,28 @@ export const popupNewCard = document.querySelector(".popup_type_new-card");
 /* Обработчик Открытие модального окна профиля */
 buttonOpenProfile.addEventListener("click", function () {
   openPopup(popupProfile);
+  clearValidation(popupProfile);
   fillProfilePopupInputs();
+  enableValidation();
 });
 
 /* Обработчик Открытие модального окна создния карточки */
 buttonOpenNewCard.addEventListener("click", function () {
   openPopup(popupNewCard);
+  clearValidation(popupNewCard);
+  clearNewCardPopupInputs();
+  enableValidation();
 });
+
+/* Функция сбрасываем значения значение полям при открытие формы добавления карточки */
+function clearNewCardPopupInputs() {
+  formCard.reset();
+}
 
 /* Элементы HTML / Все попапы на странице */
 const popupAll = document.querySelectorAll(".popup");
 
-/* Функция закрытия модально окна по оверлею */
-
-/* Перебор элементов для закрытия окна */
+/* Перебор элементов для закрытия окна по оверлею */
 popupAll.forEach(function (popup) {
   popup.addEventListener("click", function (evt) {
     handleOverlayClick(evt);
@@ -101,6 +109,8 @@ function addNewCard(evt) {
     likeClick,
     openPopupImage
   );
+  console.log(cardEl);
+
   cardContainer.prepend(cardEl);
   formCard.reset();
   closePopup(popupNewCard);
@@ -122,3 +132,83 @@ export const formCard = document.forms["new-place"];
 
 // Обработчик к форме Добавление карточки '+':
 formCard.addEventListener("submit", addNewCard);
+
+/* /* ПР 3 / Валидация  */
+
+// Функция, которая добавляет класс с ошибкой
+const showInputError = (formElement, inputElement, errorMessage) => {
+  const errorElement = formElement.querySelector(`.${inputElement.id}_error`);
+  inputElement.classList.add("popup__input_error");
+  errorElement.classList.add("popup__input_error_label_active");
+  errorElement.textContent = errorMessage;
+};
+
+// Функция, которая удаляет класс с ошибкой
+const hideInputError = (formElement, inputElement) => {
+  const errorElement = formElement.querySelector(`.${inputElement.id}_error`);
+  inputElement.classList.remove("popup__input_error");
+  errorElement.classList.remove("popup__input_error_label_active");
+  errorElement.textContent = "";
+};
+
+// Функция, которая проверяет валидность поля
+const isValid = (formElement, inputElement) => {
+  if (inputElement.validity.patternMismatch) {
+    inputElement.setCustomValidity(inputElement.dataset.errorMessage);
+  } else {
+    inputElement.setCustomValidity("");
+  }
+  if (!inputElement.validity.valid) {
+    showInputError(formElement, inputElement, inputElement.validationMessage);
+  } else {
+    hideInputError(formElement, inputElement);
+  }
+};
+
+// Функция перебирает все формы на странице
+const enableValidation = () => {
+  const formList = Array.from(document.querySelectorAll(".popup__form"));
+  formList.forEach((formElement) => {
+    setEventListeners(formElement);
+  });
+};
+
+// Функция перебирает все поля в форме и добавляет всем обработчик валидации
+const setEventListeners = (formElement) => {
+  const inputList = Array.from(formElement.querySelectorAll(".popup__input"));
+  const buttonElement = formElement.querySelector(".popup__button");
+  toggleButtonState(inputList, buttonElement);
+  inputList.forEach((inputElement) => {
+    inputElement.addEventListener("input", () => {
+      isValid(formElement, inputElement);
+      toggleButtonState(inputList, buttonElement);
+    });
+  });
+};
+
+// Функция изменения состояния кнопки формы
+const toggleButtonState = (inputList, buttonElement) => {
+  if (hasInvalidInput(inputList)) {
+    buttonElement.disabled = true;
+    buttonElement.classList.add("form__submit_inactive");
+  } else {
+    buttonElement.disabled = false;
+    buttonElement.classList.remove("form__submit_inactive");
+  }
+};
+
+// Функция принимает массив полей
+const hasInvalidInput = (inputList) => {
+  return inputList.some((inputElement) => {
+    return !inputElement.validity.valid;
+  });
+};
+
+// Функция сброса ошибок при повторном открытии попапа
+const clearValidation = (formElement) => {
+  const inputList = Array.from(formElement.querySelectorAll(".popup__input"));
+  inputList.forEach((inputElement) => {
+    inputElement.setCustomValidity("");
+    hideInputError(formElement, inputElement);
+  });
+};
