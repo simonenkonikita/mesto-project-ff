@@ -16,24 +16,22 @@ import {
   clearValidation,
   setValidation,
 } from "../components/validation.js";
+import {
+  getUsersData,
+  getCardData,
+  sendUsersData,
+  sendNewCard,
+} from "../components/API.js";
 
 /* Элементы HTML /  вставка и удаление карточек */
-export const templateContainer =
-  document.querySelector("#card-template").content;
-export const cardContainer = document.querySelector(".places__list");
-
-/* Перебор элементов для создания карточек*/
-initialCards.forEach(function (data) {
-  const cardEl = getCardElement(data, removeHandler, likeClick, openPopupImage);
-  cardContainer.append(cardEl);
-});
+const cardContainer = document.querySelector(".places__list");
 
 /* Элементы HTML /  открытие и закрытие модального окна */
 const buttonOpenProfile = document.querySelector(".profile__edit-button");
 const buttonOpenNewCard = document.querySelector(".profile__add-button");
 
-export const popupProfile = document.querySelector(".popup_type_edit");
-export const popupNewCard = document.querySelector(".popup_type_new-card");
+const popupProfile = document.querySelector(".popup_type_edit");
+const popupNewCard = document.querySelector(".popup_type_new-card");
 
 /* Обработчик Открытие модального окна профиля */
 buttonOpenProfile.addEventListener("click", function () {
@@ -60,74 +58,98 @@ popupAll.forEach(function (popup) {
   });
 });
 
-/* Функция Редактирование имени и информации о себе  */
+/* Элементы HTML /Редактирование имени и информации о себе */
+// Находим форму в DOM
+const formProfile = document.forms["edit-profile"];
+const nameInput = formProfile.elements.name;
+const jobInput = formProfile.elements.description;
+// Находим поля формы в DOM
+const profileInfo = document.querySelector(".profile__info");
+const profileTitle = profileInfo.querySelector(".profile__title");
+const profileDescription = profileInfo.querySelector(".profile__description");
+const profileAvatar = document.querySelector(".profile__image");
+
+/* Функция Присваеваем значение полям со страницы при открытие формы профиля */
+function fillProfilePopupInputs() {
+  nameInput.value = profileTitle.textContent;
+  jobInput.value = profileDescription.textContent;
+}
+
+/* Функция Редактирование имени и информации о себе на странице */
 function handleFormProfile(evt) {
   evt.preventDefault();
-
-  const nameInputValue = nameInput.value;
-  const jobInputvalueValue = jobInput.value;
-
-  profileInfo.querySelector(".profile__title").textContent = nameInputValue;
-  profileInfo.querySelector(".profile__description").textContent =
-    jobInputvalueValue;
-
+  sendUsersData(nameInput.value, jobInput.value).then(function (dataUser) {
+    profileTitle.textContent = dataUser.name;
+    profileDescription.textContent = dataUser.about;
+  });
   closePopup(popupProfile);
 }
 
-/* Функция Присваеваем значение полям при открытие формы профиля */
-function fillProfilePopupInputs() {
-  nameInput.value = profileInfo.querySelector(".profile__title").textContent;
-  jobInput.value = profileInfo.querySelector(
-    ".profile__description"
-  ).textContent;
+// Обработчик к форме Редактирование имени и информации о себе :
+formProfile.addEventListener("submit", handleFormProfile);
+
+/* Функция Редактирование имени и информации о себе на странице с сервера */
+function getDataProfile(dataUser) {
+  profileTitle.textContent = dataUser.name;
+  profileDescription.textContent = dataUser.about;
+  profileAvatar.style.backgroundImage = `url(${dataUser.avatar})`;
 }
+
+/* Работа с изображением */
+const popupImage = document.querySelector(".popup_type_image");
+const imageName = popupImage.querySelector(".popup__image");
+const imageCaption = popupImage.querySelector(".popup__caption");
 
 /* Функция открытия изображения */
 function openPopupImage(data) {
-  const popupImage = document.querySelector(".popup_type_image");
   openPopup(popupImage);
-  const imageName = popupImage.querySelector(".popup__image");
-  const imageCaption = popupImage.querySelector(".popup__caption");
   imageName.src = data.link;
   imageName.alt = data.name;
   imageCaption.textContent = data.name;
 }
 
-/* Функция Добавление карточки '+' */
-function addNewCard(evt) {
-  evt.preventDefault();
-  /* Находим значения */
-  const cardNameInput = formCard.elements["place-name"];
-  const cardLinkInput = formCard.elements.link;
-  const nameInputValue = cardNameInput.value;
-  const linkInputValue = cardLinkInput.value;
-  /* Передаем значения */
-  const cardEl = getCardElement(
-    { name: nameInputValue, link: linkInputValue },
-    removeHandler,
-    likeClick,
-    openPopupImage
-  );
-  console.log(cardEl);
-
-  cardContainer.prepend(cardEl);
-  formCard.reset();
-  closePopup(popupNewCard);
-}
-
-/* Элементы HTML /Редактирование имени и информации о себе */
-// Находим форму в DOM
-const formProfile = document.forms["edit-profile"];
-// Находим поля формы в DOM
-export const profileInfo = document.querySelector(".profile__info");
-export const nameInput = formProfile.elements.name;
-export const jobInput = formProfile.elements.description;
-
-// Обработчик к форме Редактирование имени и информации о себе :
-formProfile.addEventListener("submit", handleFormProfile);
-
 /* Добавление карточки '+' */
 const formCard = document.forms["new-place"];
 
+/* Функция Добавление карточки '+' */
+function addNewCard(evt) {
+  evt.preventDefault();
+  const nameInputCard = formCard.elements["place-name"];
+  const linkInputCard = formCard.elements.link;
+
+  sendNewCard(nameInputCard.value, linkInputCard.value).then(function (
+    dataCard
+  ) {
+    const cardEl = getCardElement(
+      dataCard,
+      dataCard.owner._id,
+      removeHandler,
+      likeClick,
+      openPopupImage
+    );
+    cardContainer.prepend(cardEl);
+    formCard.reset();
+    closePopup(popupNewCard);
+    console.log(dataCard);
+  });
+}
+
 // Обработчик к форме Добавление карточки '+':
 formCard.addEventListener("submit", addNewCard);
+
+Promise.all([getUsersData(), getCardData()]).then(function ([
+  dataUser,
+  newCard,
+]) {
+  getDataProfile(dataUser);
+  newCard.forEach(function (cardData) {
+    const cardEl = getCardElement(
+      cardData,
+      dataUser._id,
+      removeHandler,
+      likeClick,
+      openPopupImage
+    );    
+    cardContainer.append(cardEl);
+  });
+});

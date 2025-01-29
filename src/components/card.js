@@ -1,12 +1,12 @@
-import { templateContainer } from "../scripts/index.js";
-
 /* Функция вставка и удаление карточек */
 export function getCardElement(
   data,
+  UsersID,
   deleteCallback,
   likeCallback,
   imageCallback
 ) {
+  const templateContainer = document.querySelector("#card-template").content;
   const cardEl = templateContainer
     .querySelector(".places__item")
     .cloneNode(true);
@@ -40,3 +40,4 @@ export function removeHandler(evt) {
 export function likeClick(evt) {
   evt.target.classList.toggle("card__like-button_is-active");
 }
+
