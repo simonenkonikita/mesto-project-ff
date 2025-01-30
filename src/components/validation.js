@@ -96,7 +96,7 @@ function hasInvalidInput(inputList) {
 }
 
 // Функция сброса ошибок при повторном открытии попапа
-export function clearValidation(formElement, validationConfig) {
+export function clearValidation(formElement, formReset, validationConfig) {
   const buttonElement = formElement.querySelector(
     validationConfig.submitButtonSelector
   );
@@ -105,8 +105,9 @@ export function clearValidation(formElement, validationConfig) {
   );
   inputList.forEach(function (inputElement) {
     inputElement.setCustomValidity("");
+    buttonElement.textContent = "Сохранить";
     hideInputError(formElement, inputElement, validationConfig);
   });
-  formCard.reset();
+  formReset.reset();
   toggleButtonState(inputList, buttonElement, validationConfig);
 }

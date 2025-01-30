@@ -1,6 +1,7 @@
-/* Функция вставка и удаление карточек */
+import { removeCard, sendLikeCard, removeLikeCard } from "../components/API.js";
+
 export function getCardElement(
-  data,
+  dataCard,
   UsersID,
   deleteCallback,
   likeCallback,
@@ -12,32 +13,59 @@ export function getCardElement(
     .cloneNode(true);
 
   const title = cardEl.querySelector(".card__title");
-  title.textContent = data.name;
+  title.textContent = dataCard.name;
 
   const image = cardEl.querySelector(".card__image");
-  image.src = data.link;
-  image.alt = data.name;
+  image.src = dataCard.link;
+  image.alt = dataCard.name;
 
   const deleteBtn = cardEl.querySelector(".card__delete-button");
-  deleteBtn.addEventListener("click", deleteCallback);
-
-  const buttonLike = cardEl.querySelector(".card__like-button");
-  buttonLike.addEventListener("click", likeCallback);
-
-  image.addEventListener("click", function () {
-    imageCallback(data);
+  if (dataCard.owner._id !== UsersID) {
+    deleteBtn.classList.add("card__delete-button_inactive");
+  }
+  deleteBtn.addEventListener("click", function (evt) {
+    deleteCallback(evt, dataCard._id);
   });
 
+  const buttonLike = cardEl.querySelector(".card__like-button");
+  const сounterLike = cardEl.querySelector(".card__like-counter");
+  const sumLike = dataCard.likes.length;
+  сounterLike.textContent = sumLike;
+  buttonLike.addEventListener("click", function (evt) {
+    likeCallback(evt, dataCard._id, сounterLike);
+  });
+  const checkLiked = dataCard.likes.some(function (like) {
+    return like._id === UsersID;
+  });
+  if (checkLiked) {
+    buttonLike.classList.add("card__like-button_is-active");
+  }
+
+  image.addEventListener("click", function () {
+    imageCallback(dataCard);
+  });
+  console.log();
   return cardEl;
 }
 
 /* Функция удаления карточки*/
-export function removeHandler(evt) {
-  evt.target.closest(".places__item").remove();
+export function removeHandler(evt, CardID) {
+  removeCard(CardID).then(function () {
+    evt.target.closest(".places__item").remove();
+  });
 }
 
 /* Функция лайк карточки */
-export function likeClick(evt) {
-  evt.target.classList.toggle("card__like-button_is-active");
+export function likeClick(evt, CardID, сounterLike) {
+  if (!evt.target.classList.contains("card__like-button_is-active")) {
+    sendLikeCard(CardID).then(function (sum) {
+      evt.target.classList.add("card__like-button_is-active");
+      сounterLike.textContent = sum.likes.length;
+    });
+  } else {
+    removeLikeCard(CardID).then(function (sum) {
+      evt.target.classList.remove("card__like-button_is-active");
+      сounterLike.textContent = sum.likes.length;
+    });
+  }
 }
-

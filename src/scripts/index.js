@@ -1,6 +1,5 @@
 /* Импотры */
 import "../styles/styles.css";
-import { initialCards } from "./cards.js";
 import {
   getCardElement,
   removeHandler,
@@ -21,6 +20,7 @@ import {
   getCardData,
   sendUsersData,
   sendNewCard,
+  changeAvatarUsers,
 } from "../components/API.js";
 
 /* Элементы HTML /  вставка и удаление карточек */
@@ -36,7 +36,7 @@ const popupNewCard = document.querySelector(".popup_type_new-card");
 /* Обработчик Открытие модального окна профиля */
 buttonOpenProfile.addEventListener("click", function () {
   openPopup(popupProfile);
-  clearValidation(popupProfile, setValidation);
+  clearValidation(popupProfile, formProfile, setValidation);
   fillProfilePopupInputs();
   enableValidation(setValidation);
 });
@@ -44,7 +44,7 @@ buttonOpenProfile.addEventListener("click", function () {
 /* Обработчик Открытие модального окна создния карточки */
 buttonOpenNewCard.addEventListener("click", function () {
   openPopup(popupNewCard);
-  clearValidation(popupNewCard, setValidation);
+  clearValidation(popupNewCard, formCard, setValidation);
   enableValidation(setValidation);
 });
 
@@ -68,6 +68,29 @@ const profileInfo = document.querySelector(".profile__info");
 const profileTitle = profileInfo.querySelector(".profile__title");
 const profileDescription = profileInfo.querySelector(".profile__description");
 const profileAvatar = document.querySelector(".profile__image");
+
+const popupAvatar = document.querySelector(".popup_type_avatar");
+/* const popupNewCard = document.querySelector(".popup_type_new-card"); */
+const formAvatar = document.forms["edit-avatar"];
+const avatarInput = formAvatar.elements.avatar;
+
+/* Обработчик Открытие модального окна редактирования аватарки*/
+profileAvatar.addEventListener("click", function () {
+  openPopup(popupAvatar);
+  clearValidation(popupAvatar, formAvatar, setValidation);
+  enableValidation(setValidation);
+});
+
+/* Функция редактирования аватарки*/
+function editAvatar(evt) {
+  evt.preventDefault();
+  changeAvatarUsers(avatarInput.value).then(function (dataUser) {
+    profileAvatar.style.backgroundImage = `url(${dataUser.avatar})`;
+  });
+  closePopup(popupAvatar);
+}
+
+formAvatar.addEventListener("submit", editAvatar);
 
 /* Функция Присваеваем значение полям со страницы при открытие формы профиля */
 function fillProfilePopupInputs() {
@@ -94,6 +117,14 @@ function getDataProfile(dataUser) {
   profileDescription.textContent = dataUser.about;
   profileAvatar.style.backgroundImage = `url(${dataUser.avatar})`;
 }
+
+/* Обработчик Открытие модального окна профиля */
+buttonOpenProfile.addEventListener("click", function () {
+  openPopup(popupProfile);
+  clearValidation(popupProfile, formProfile, setValidation);
+  fillProfilePopupInputs();
+  enableValidation(setValidation);
+});
 
 /* Работа с изображением */
 const popupImage = document.querySelector(".popup_type_image");
@@ -142,14 +173,27 @@ Promise.all([getUsersData(), getCardData()]).then(function ([
   newCard,
 ]) {
   getDataProfile(dataUser);
-  newCard.forEach(function (cardData) {
+  newCard.forEach(function (dataCard) {
     const cardEl = getCardElement(
-      cardData,
+      dataCard,
       dataUser._id,
       removeHandler,
       likeClick,
       openPopupImage
-    );    
+    );
     cardContainer.append(cardEl);
+    console.log(dataUser);
   });
 });
+
+const popupButtonAll = document.querySelectorAll(".popup__button");
+
+popupButtonAll.forEach(function (popupButton) {
+  popupButton.addEventListener("click", function (evt) {
+    changeTextButton(evt);
+  });
+});
+
+function changeTextButton(evt) {
+  evt.target.textContent = "Сохранение...";
+}

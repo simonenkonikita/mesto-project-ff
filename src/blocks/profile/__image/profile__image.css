@@ -20,3 +20,24 @@
     margin-right: 0;
   }
 }
+
+.profile__image:hover {
+  opacity: 1;
+}
+
+.profile__image_hover {
+  visibility: hidden;
+  background: rgba(0, 0, 0, 0.8) url(../../../images/icon_profile_editing.png);
+  background-repeat: no-repeat;
+  background-position: center;
+  height: 100%;
+  width: 100%;
+  
+}
+
+.profile__image:hover  .profile__image_hover  {
+  visibility: visible;
+}
+
+
+
