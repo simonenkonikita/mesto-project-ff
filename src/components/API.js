@@ -3,9 +3,9 @@ const config = {
   basePathUrl: "/wff-cohort-31",
   headers: {
     authorization: "8097a63f-5a03-493b-9364-1b306dfb459f",
-    'Content-Type': 'application/json'
-  }
-}
+    "Content-Type": "application/json",
+  },
+};
 
 export function handlerResponse(res) {
   if (res.ok) {
@@ -106,7 +106,7 @@ export function removeLikeCard(CardID) {
 export function changeAvatarUsers(link) {
   return fetch(`${config.baseUrl + config.basePathUrl}/users/me/avatar/`, {
     method: "PATCH",
-    headers:config.headers,
+    headers: config.headers,
     body: JSON.stringify({
       avatar: link,
     }),

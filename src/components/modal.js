@@ -1,17 +1,17 @@
-/* Функция открытия модального окна */
+/* Открытие модального окна */
 export function openPopup(popup) {
   popup.classList.add("popup_is-opened");
   addPopupAnimated(popup);
   document.addEventListener("keydown", keyСlosePopup);
 }
 
-/* Функция закрытия модального окна */
+/* Закрытие модального окна */
   export function closePopup(popup) {
   popup.classList.remove("popup_is-opened");
   document.removeEventListener("keydown", keyСlosePopup);
 }
 
-/* Функция закрытия модально окна по Esc */
+/* Закрытие модально окна по Esc */
 export function keyСlosePopup(evt) {
   if (evt.key === "Escape") {
     const popupOpen = document.querySelector(".popup_is-opened");
@@ -28,7 +28,7 @@ export function handleOverlayClick(evt) {
   }
 }
 
-/* Функция анимации модального окна */
+/* Анимация модального окна */
 export function addPopupAnimated(popup) {
   popup.classList.add("popup_is-animated");
 }

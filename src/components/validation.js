@@ -8,9 +8,7 @@ export const setValidation = {
   errorClass: "popup__input_error_label_active",
 };
 
-export const formCard = document.forms["new-place"];
-
-// Функция, которая добавляет класс с ошибкой
+/* Добавляем класс с ошибкой */
 function showInputError(
   formElement,
   inputElement,
@@ -23,7 +21,7 @@ function showInputError(
   errorElement.textContent = errorMessage;
 }
 
-// Функция, которая удаляет класс с ошибкой
+/* Удаляем класс с ошибкой */
 function hideInputError(formElement, inputElement, validationConfig) {
   const errorElement = formElement.querySelector(`.${inputElement.id}_error`);
   inputElement.classList.remove(validationConfig.inputErrorClass);
@@ -31,7 +29,7 @@ function hideInputError(formElement, inputElement, validationConfig) {
   errorElement.textContent = "";
 }
 
-// Функция, которая проверяет валидность поля
+/* Проверяет валидность поля */
 function isValid(formElement, inputElement, validationConfig) {
   if (inputElement.validity.patternMismatch) {
     inputElement.setCustomValidity(inputElement.dataset.errorMessage);
@@ -50,7 +48,7 @@ function isValid(formElement, inputElement, validationConfig) {
   }
 }
 
-// Функция перебирает все формы на странице
+/* Перебираем все формы на странице */
 export function enableValidation(validationConfig) {
   const formList = Array.from(
     document.querySelectorAll(validationConfig.formSelector)
@@ -60,7 +58,7 @@ export function enableValidation(validationConfig) {
   });
 }
 
-// Функция перебирает все поля в форме и добавляет всем обработчик валидации
+/* Перебираем поля в форме и добавляет всем обработчик валидации */
 function setEventListeners(formElement, validationConfig) {
   const inputList = Array.from(
     formElement.querySelectorAll(validationConfig.inputSelector)
@@ -77,7 +75,7 @@ function setEventListeners(formElement, validationConfig) {
   });
 }
 
-// Функция изменения состояния кнопки формы
+/* Изменяем состояния кнопки формы */
 function toggleButtonState(inputList, buttonElement, validationConfig) {
   if (hasInvalidInput(inputList)) {
     buttonElement.disabled = true;
@@ -88,14 +86,14 @@ function toggleButtonState(inputList, buttonElement, validationConfig) {
   }
 }
 
-// Функция проверяет валидность поля
+/* Проверяем валидность поля */
 function hasInvalidInput(inputList) {
   return inputList.some(function (inputElement) {
     return !inputElement.validity.valid;
   });
 }
 
-// Функция сброса ошибок при повторном открытии попапа
+/* Сбрасываем ошибки и текст кнопки при повторном открытии попапа */
 export function clearValidation(formElement, formReset, validationConfig) {
   const buttonElement = formElement.querySelector(
     validationConfig.submitButtonSelector

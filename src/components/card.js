@@ -1,5 +1,6 @@
 import { removeCard, sendLikeCard, removeLikeCard } from "../components/API.js";
 
+/* Создание карточек и добавление им обработчиков */
 export function getCardElement(
   dataCard,
   UsersID,
@@ -11,11 +12,9 @@ export function getCardElement(
   const cardEl = templateContainer
     .querySelector(".places__item")
     .cloneNode(true);
-
   const title = cardEl.querySelector(".card__title");
-  title.textContent = dataCard.name;
-
   const image = cardEl.querySelector(".card__image");
+  title.textContent = dataCard.name;
   image.src = dataCard.link;
   image.alt = dataCard.name;
 
@@ -44,18 +43,17 @@ export function getCardElement(
   image.addEventListener("click", function () {
     imageCallback(dataCard);
   });
-  console.log();
   return cardEl;
 }
 
-/* Функция удаления карточки*/
+/* Удаления карточки*/
 export function removeHandler(evt, CardID) {
   removeCard(CardID).then(function () {
     evt.target.closest(".places__item").remove();
   });
 }
 
-/* Функция лайк карточки */
+/* Лайк карточки */
 export function likeClick(evt, CardID, сounterLike) {
   if (!evt.target.classList.contains("card__like-button_is-active")) {
     sendLikeCard(CardID).then(function (sum) {
