@@ -18,26 +18,18 @@ export function getUsersData() {
   return fetch(`${config.baseUrl + config.basePathUrl}/users/me/`, {
     method: "GET",
     headers: {
-      authorization: "8097a63f-5a03-493b-9364-1b306dfb459f",
+      authorization: config.headers.authorization,
     },
-  })
-    .then(handlerResponse)
-    .catch(function (err) {
-      console.log(err);
-    });
+  }).then(handlerResponse);
 }
 
 export function getCardData() {
   return fetch(`${config.baseUrl + config.basePathUrl}/cards/`, {
     method: "GET",
     headers: {
-      authorization: "8097a63f-5a03-493b-9364-1b306dfb459f",
+      authorization: config.headers.authorization,
     },
-  })
-    .then(handlerResponse)
-    .catch(function (err) {
-      console.log(err);
-    });
+  }).then(handlerResponse);
 }
 
 export function sendUsersData(nameUsers, description) {
@@ -48,11 +40,7 @@ export function sendUsersData(nameUsers, description) {
       name: nameUsers,
       about: description,
     }),
-  })
-    .then(handlerResponse)
-    .catch(function (err) {
-      console.log(err);
-    });
+  }).then(handlerResponse);
 }
 
 export function sendNewCard(nameCard, linkCard) {
@@ -63,44 +51,28 @@ export function sendNewCard(nameCard, linkCard) {
       name: nameCard,
       link: linkCard,
     }),
-  })
-    .then(handlerResponse)
-    .catch(function (err) {
-      console.log(err);
-    });
+  }).then(handlerResponse);
 }
 
 export function removeCard(CardID) {
   return fetch(`${config.baseUrl + config.basePathUrl}/cards/` + CardID, {
     method: "DELETE",
     headers: config.headers,
-  })
-    .then(handlerResponse)
-    .catch(function (err) {
-      console.log(err);
-    });
+  }).then(handlerResponse);
 }
 
 export function sendLikeCard(CardID) {
   return fetch(`${config.baseUrl + config.basePathUrl}/cards/likes/` + CardID, {
     method: "PUT",
     headers: config.headers,
-  })
-    .then(handlerResponse)
-    .catch(function (err) {
-      console.log(err);
-    });
+  }).then(handlerResponse);
 }
 
 export function removeLikeCard(CardID) {
   return fetch(`${config.baseUrl + config.basePathUrl}/cards/likes/` + CardID, {
     method: "DELETE",
     headers: config.headers,
-  })
-    .then(handlerResponse)
-    .catch(function (err) {
-      console.log(err);
-    });
+  }).then(handlerResponse);
 }
 
 export function changeAvatarUsers(link) {
@@ -110,9 +82,5 @@ export function changeAvatarUsers(link) {
     body: JSON.stringify({
       avatar: link,
     }),
-  })
-    .then(handlerResponse)
-    .catch(function (err) {
-      console.log(err);
-    });
+  }).then(handlerResponse);
 }

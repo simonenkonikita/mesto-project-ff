@@ -1,13 +1,3 @@
-/* Элементы HTML / Данные для валидации */
-export const setValidation = {
-  formSelector: ".popup__form",
-  inputSelector: ".popup__input",
-  submitButtonSelector: ".popup__button",
-  inactiveButtonClass: "form__submit_inactive",
-  inputErrorClass: "popup__input_error",
-  errorClass: "popup__input_error_label_active",
-};
-
 /* Добавляем класс с ошибкой */
 function showInputError(
   formElement,
@@ -93,7 +83,7 @@ function hasInvalidInput(inputList) {
   });
 }
 
-/* Сбрасываем ошибки и текст кнопки при повторном открытии попапа */
+/* Сбрасываем ошибки при повторном открытии попапа */
 export function clearValidation(formElement, formReset, validationConfig) {
   const buttonElement = formElement.querySelector(
     validationConfig.submitButtonSelector
@@ -103,7 +93,6 @@ export function clearValidation(formElement, formReset, validationConfig) {
   );
   inputList.forEach(function (inputElement) {
     inputElement.setCustomValidity("");
-    buttonElement.textContent = "Сохранить";
     hideInputError(formElement, inputElement, validationConfig);
   });
   formReset.reset();

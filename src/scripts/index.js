@@ -10,11 +10,7 @@ import {
   closePopup,
   handleOverlayClick,
 } from "../components/modal.js";
-import {
-  enableValidation,
-  clearValidation,
-  setValidation,
-} from "../components/validation.js";
+import { enableValidation, clearValidation } from "../components/validation.js";
 import {
   getUsersData,
   getCardData,
@@ -22,6 +18,7 @@ import {
   sendNewCard,
   changeAvatarUsers,
 } from "../components/API.js";
+import { setValidation } from "../components/validationConfig.js";
 
 /* Контейнер для работы с карточками */
 const cardContainer = document.querySelector(".places__list");
@@ -60,40 +57,57 @@ const profileAvatar = document.querySelector(".profile__image");
 const imageName = popupImage.querySelector(".popup__image");
 const imageCaption = popupImage.querySelector(".popup__caption");
 
-/* Добавление карточки '+' */
-formCard.addEventListener("submit", function addNewCard(evt) {
-  evt.preventDefault();
-  sendNewCard(nameInputCard.value, linkInputCard.value).then(function (
-    dataCard
-  ) {
-    const cardEl = getCardElement(
-      dataCard,
-      dataCard.owner._id,
-      removeHandler,
-      likeClick,
-      openImagePopup
-    );
-    cardContainer.prepend(cardEl);
-    formCard.reset();
-    closePopup(popupNewCard);
-  });
-});
-
 /* Загрузка карточек с сервера */
-Promise.all([getUsersData(), getCardData()]).then(function ([
-  dataUser,
-  newCard,
-]) {
-  getDataProfile(dataUser);
-  newCard.forEach(function (dataCard) {
-    const cardEl = getCardElement(
-      dataCard,
-      dataUser._id,
-      removeHandler,
-      likeClick,
-      openImagePopup
-    );
-    cardContainer.append(cardEl);
+Promise.all([getUsersData(), getCardData()])
+  .then(function ([dataUser, newCard]) {
+    setDataProfile(dataUser);
+    newCard.forEach(function (dataCard) {
+      const cardEl = getCardElement(
+        dataCard,
+        dataUser._id,
+        removeHandler,
+        likeClick,
+        openImagePopup
+      );
+      cardContainer.append(cardEl);
+    });
+  })
+  .catch(function (err) {
+    console.log(err);
+  });
+
+/* Редактирование Submit в момент отправки формы */
+function editSubmitLabel(evt, submitElement) {
+  evt.preventDefault();
+  const buttonSubmit = evt.submitter;
+  const buttonSubmitLable = buttonSubmit.textContent;
+  buttonSubmit.textContent = "Сохранение...";
+  submitElement()
+    .catch(function (err) {
+      console.log(err);
+    })
+    .finally(function () {
+      buttonSubmit.textContent = buttonSubmitLable;
+    });
+}
+
+/* Добавление карточки '+' */
+formCard.addEventListener("submit", function (evt) {
+  editSubmitLabel(evt, function () {
+    return sendNewCard(nameInputCard.value, linkInputCard.value).then(function (
+      dataCard
+    ) {
+      const cardEl = getCardElement(
+        dataCard,
+        dataCard.owner._id,
+        removeHandler,
+        likeClick,
+        openImagePopup
+      );
+      cardContainer.prepend(cardEl);
+      formCard.reset();
+      closePopup(popupNewCard);
+    });
   });
 });
 
@@ -101,13 +115,6 @@ Promise.all([getUsersData(), getCardData()]).then(function ([
 popupAll.forEach(function (popup) {
   popup.addEventListener("click", function (evt) {
     handleOverlayClick(evt);
-  });
-});
-
-/* Перебор кнопок попапов для UX при клике */
-popupButtonAll.forEach(function (popupButton) {
-  popupButton.addEventListener("click", function (evt) {
-    evt.target.textContent = "Сохранение...";
   });
 });
 
@@ -126,17 +133,20 @@ function fillProfilePopupInputs() {
 }
 
 /* Редактирование имени и информации о себе  */
-formProfile.addEventListener("submit", function handleFormProfile(evt) {
-  evt.preventDefault();
-  sendUsersData(nameInput.value, jobInput.value).then(function (dataUser) {
-    profileTitle.textContent = dataUser.name;
-    profileDescription.textContent = dataUser.about;
+formProfile.addEventListener("submit", function (evt) {
+  editSubmitLabel(evt, function () {
+    return sendUsersData(nameInput.value, jobInput.value).then(function (
+      dataUser
+    ) {
+      profileTitle.textContent = dataUser.name;
+      profileDescription.textContent = dataUser.about;
+      closePopup(popupProfile);
+    });
   });
-  closePopup(popupProfile);
 });
 
 /* Редактирование имени и информации о себе на странице с сервера */
-function getDataProfile(dataUser) {
+function setDataProfile(dataUser) {
   profileTitle.textContent = dataUser.name;
   profileDescription.textContent = dataUser.about;
   profileAvatar.style.backgroundImage = `url(${dataUser.avatar})`;
@@ -157,12 +167,13 @@ profileAvatar.addEventListener("click", function () {
 });
 
 /* Редактирования аватарки*/
-formAvatar.addEventListener("submit", function editAvatar(evt) {
-  evt.preventDefault();
-  changeAvatarUsers(avatarInput.value).then(function (dataUser) {
-    profileAvatar.style.backgroundImage = `url(${dataUser.avatar})`;
+formAvatar.addEventListener("submit", function (evt) {
+  editSubmitLabel(evt, function () {
+    return changeAvatarUsers(avatarInput.value).then(function (dataUser) {
+      profileAvatar.style.backgroundImage = `url(${dataUser.avatar})`;
+      closePopup(popupAvatar);
+    });
   });
-  closePopup(popupAvatar);
 });
 
 /* Открытие попапа с изображением */
